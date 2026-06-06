@@ -1,34 +1,38 @@
 import subprocess 
 import platform
 import ipaddress
+import concurrent.futures  # New library for multi-threading
 from . import DiscoveryEngine
 
 class ICMPDiscovery(DiscoveryEngine):
-    def discover(self, target_network: str) -> list[str]:
-        # 1. Create the empty list BEFORE the loop starts
-        active_hosts = []
+    
+    # The Helper Method - underscore: means this is a private/internal method
+    def _ping_host(self, ip) -> str:
+        command = ["ping", "-c", "1", "-W", "100", str(ip)]
+        result = subprocess.run(command, capture_output=True, text=True)
         
+        if result.returncode == 0:
+            print(f"[+] Active host found: {ip}")
+            return str(ip)
+        return None
+
+    # The Main Method
+    def discover(self, target_network: str) -> list[str]:
+        active_hosts = []
         network = ipaddress.ip_network(target_network, strict=False)
         
-        # 3. Start the loop
-        for ip in network.hosts():
-            # loops 256 times
+        print(f"[*] Starting concurrent scan on {target_network}...")
+        
+        # Thread pool
+        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
             
-            command = ["ping", "-c", "1", "-W", "100", str(ip)]
-
-            # must run every single loop
-            result = subprocess.run(
-                command,
-                capture_output=True,
-                text=True
-            )
+            # executor.map automatically loops through network.hosts() 
+            # and passes each IP to your _ping_host helper method
+            results = executor.map(self._ping_host, network.hosts())
             
-            # 5. Check if the ping was successful (0 means success)
-            if result.returncode == 0:
-                print(f"[+] Active host found: {ip}")
-                active_hosts.append(str(ip))
-                
-            # END
-
-        # Return active hosts to main.py
+            # Collect the results as they finish
+            for result in results:
+                if result is not None:
+                    active_hosts.append(result)
+                    
         return active_hosts
