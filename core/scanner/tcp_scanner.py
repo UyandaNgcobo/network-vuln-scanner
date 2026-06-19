@@ -19,9 +19,10 @@ def scan_ports(ip, port):
         return f"[+] Port {port} is OPEN!"
     else:     
         s.close() #throw phone away before loop restarts
-        return None
+        return f"[-] {ip} Port {port} is closed/filtered."
     
 def run_tcp_scan(target_ips, target_ports):
+    print(f"[*] Starting TCP Port Scan...")
 
     #setting up slots for Futures
     futures = []
@@ -34,5 +35,13 @@ def run_tcp_scan(target_ips, target_ports):
                 buzzer = executor.submit(scan_ports, host, port)
                 futures.append(buzzer)
 
-                for buzzer in concurrent.futures.as_completed(futures):
-                    scan_result = buzzer.result()
+            for buzzer in concurrent.futures.as_completed(futures):
+                scan_result = buzzer.result()
+                print(scan_result)
+
+if __name__ == "__main__":
+    # Testing data locally
+    test_ips = ['10.177.84.52', '10.177.84.88'] 
+    test_ports = [21, 22, 23, 25, 53, 80, 110, 135, 139, 443, 445, 3306, 3389]
+    
+    run_tcp_scan(test_ips, test_ports)
