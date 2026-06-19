@@ -6,7 +6,7 @@ from . import DiscoveryEngine
 
 class ICMPDiscovery(DiscoveryEngine):
     
-    # The Helper Method - underscore: means this is a private/internal method
+    # internal_method
     def _ping_host(self, ip) -> str:
         command = ["ping", "-c", "1", "-W", "100", str(ip)]
         result = subprocess.run(command, capture_output=True, text=True)
@@ -27,7 +27,7 @@ class ICMPDiscovery(DiscoveryEngine):
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
             
             # executor.map automatically loops through network.hosts() 
-            # and passes each IP to your _ping_host helper method
+            # and passes each IP to _ping_host helper method
             results = executor.map(self._ping_host, network.hosts())
             
             # Collect the results as they finish
