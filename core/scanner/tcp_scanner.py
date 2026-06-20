@@ -54,11 +54,3 @@ class TCPScanner:
                     print(f"[+] {scan_result[0]} Port {scan_result[1]} is OPEN!")
             
         return active_services
-
-
-# if __name__ == "__main__":
-#     # Testing data locally
-#     test_ips = ['10.177.84.52', '10.177.84.88'] 
-#     test_ports = [21, 22, 23, 25, 53, 80, 110, 135, 139, 443, 445, 3306, 3389]
-    
-#     run_tcp_scan(test_ips, test_ports)
