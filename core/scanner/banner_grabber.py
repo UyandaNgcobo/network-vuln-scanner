@@ -5,12 +5,13 @@ class BannerGrabber:
     def __init__(self):
         pass
 
-    def _probe(s, host):
+    def _probe(self, s, ip, port):
 
         probe = 'GET / HTTP/1.1\r\n\r\n'
         s.sendall(probe.encode('utf-8'))
         raw_p_data = s.recv(1024)
         clean_text = raw_p_data.decode('utf-8')
+        return clean_text
 
         #actuall banner grabbing
     def _grab_banner(self, ip, port):
@@ -28,18 +29,18 @@ class BannerGrabber:
         #before sending HTPP, use .encode('utf-8')
         #when recieving bytes, use .decode('utf-8')
          #active ports
-        raw_a_data = s.recv(1024)
-        raw_a_data.decode('utf-8')
-       
-
-        #passive  ports
-       
+        if port == 80 or port == 443:
+            banner = self._probe(s, ip, port)
+        else:
+            raw_a_data = s.recv(1024)
+            raw_a_data.decode('utf-8')
 
         #& throw phone
         s.close()
 
         pass
 
-    def run(target_hosts):
+    def run(self,target_hosts):
         print("[*] Grabbing banners...")
-        pass
+        for ip, port in target_hosts:
+            self._grab_banner(ip, port)
