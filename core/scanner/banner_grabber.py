@@ -11,7 +11,7 @@ class BannerGrabber:
         probe = 'GET / HTTP/1.1\r\n\r\n'
         s.sendall(probe.encode('utf-8'))
         raw_p_data = s.recv(1024)
-        clean_text = raw_p_data.decode('utf-8', error='ignore')
+        clean_text = raw_p_data.decode('utf-8', errors='ignore')
         return clean_text
 
         #actuall banner grabbing
@@ -33,13 +33,13 @@ class BannerGrabber:
                 banner = raw_a_data.decode('utf-8')
             s.close()
 
-            return banner
+            return (ip, port, banner.strip())
         
         except Exception as e:
             return (ip, port, "No Banner / Connection Failed")
         
     def run(self, target_hosts):
-        print("[*] Grabbing banners...")
+        print("[*] Grabbing banners...\n")
 
         futures = []
         banners = []
@@ -49,11 +49,15 @@ class BannerGrabber:
                 buzzer = executor.submit(self._grab_banner, ip, port)
                 futures.append(buzzer)
 
+            
             for buzzer in concurrent.futures.as_completed(futures):
                 grabbing_result = buzzer.result()
 
                 if grabbing_result is not None:
-                    banners.append((ip, port, grabbing_result))
+                    result_ip, result_port, result_banner = grabbing_result
+                    banners.append((result_ip, result_port, grabbing_result))
+
+                    print(f"ip: {result_ip}\nport: {result_port}\nBanner: {result_banner}\n\n")
         
         return banners
 
