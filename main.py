@@ -10,7 +10,7 @@ def main():
     scanner = ICMPDiscovery()
     
     # Give it a test target network
-    target = "10.177.84.0/24"
+    target = "10.18.48.88/24"
     
     # Trigger the discovery phase
     active_hosts = scanner.discover(target)
