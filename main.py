@@ -18,9 +18,11 @@ def main():
     tcp_scanner = TCPScanner(max_threads=100)
 
     tcp_results = tcp_scanner.run(active_hosts, test_ports)
-    banner_grabber = BannerGrabber.run(tcp_scanner)
+
+
+    banner_grabber = BannerGrabber(max_workers=100)
+    banner_grabber.run(tcp_results)
     
-    print(f"Scan complete. Found hosts: {tcp_results}")
 
 if __name__ == "__main__":
     main()

@@ -2,15 +2,16 @@ import socket
 import concurrent.futures
 
 class BannerGrabber:
-    def __init__(self):
-        pass
+    def __init__(self, max_workers=50, timeout=2.0):
+        self.timeout = timeout
+        self.max_workers = max_workers
 
     def _probe(self, s, ip, port):
 
         probe = 'GET / HTTP/1.1\r\n\r\n'
         s.sendall(probe.encode('utf-8'))
         raw_p_data = s.recv(1024)
-        clean_text = raw_p_data.decode('utf-8')
+        clean_text = raw_p_data.decode('utf-8', error='ignore')
         return clean_text
 
         #actuall banner grabbing
@@ -22,25 +23,40 @@ class BannerGrabber:
         #2. set timeout
         s.settimeout(self.timeout) #wait x seconds and then give up
 
-        #3. knock
-        result = s.connect_ex((ip, port))
+        try:
+            s.connect((ip, port))
 
-        #probe: GET / HTTP/1.1\r\n\r\n
-        #before sending HTPP, use .encode('utf-8')
-        #when recieving bytes, use .decode('utf-8')
-         #active ports
-        if port == 80 or port == 443:
-            banner = self._probe(s, ip, port)
-        else:
-            raw_a_data = s.recv(1024)
-            raw_a_data.decode('utf-8')
+            if port == 80 or port == 443:
+                banner = self._probe(s, ip, port)
+            else:
+                raw_a_data = s.recv(1024)
+                banner = raw_a_data.decode('utf-8')
+            s.close()
 
-        #& throw phone
-        s.close()
-
-        pass
-
-    def run(self,target_hosts):
+            return banner
+        
+        except Exception as e:
+            return (ip, port, "No Banner / Connection Failed")
+        
+    def run(self, target_hosts):
         print("[*] Grabbing banners...")
-        for ip, port in target_hosts:
-            self._grab_banner(ip, port)
+
+        futures = []
+        banners = []
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+            for ip, port in target_hosts:
+                buzzer = executor.submit(self._grab_banner, ip, port)
+                futures.append(buzzer)
+
+            for buzzer in concurrent.futures.as_completed(futures):
+                grabbing_result = buzzer.result()
+
+                if grabbing_result is not None:
+                    banners.append((ip, port, grabbing_result))
+        
+        return banners
+
+
+
+        
