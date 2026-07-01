@@ -60,7 +60,3 @@ class BannerGrabber:
                     print(f"ip: {result_ip}\nport: {result_port}\nBanner: {result_banner}\n\n")
         
         return banners
-
-
-
-        

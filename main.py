@@ -15,13 +15,22 @@ def main():
     
     # Trigger the discovery phase
     active_hosts = icmp_scanner.discover(target)
-    tcp_scanner = TCPScanner(max_threads=100)
 
-    tcp_results = tcp_scanner.run(active_hosts, test_ports)
+    if((len(active_hosts) > 1)):
+
+        tcp_scanner = TCPScanner(max_threads=100)
+
+        tcp_results = tcp_scanner.run(active_hosts, test_ports)
 
 
-    banner_grabber = BannerGrabber(max_workers=100)
-    banner_grabber.run(tcp_results)
+        banner_grabber = BannerGrabber(max_workers=100)
+        banners = banner_grabber.run(tcp_results)
+
+        print(f"\n\nBanners: {banners}")
+    else:
+        print("\n--- Hosts currently inactive ---\n")
+
+
     
 
 if __name__ == "__main__":
