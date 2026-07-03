@@ -17,7 +17,8 @@ class CVEMatcher:
         for value in signatures.values():
             match = re.search(value, banner)
         if match:
-            print(match.group(1))
+            print(f"{signatures[value]}: {match.group(1)}")
+                
                 
 
     def run(banners):
