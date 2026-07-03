@@ -2,9 +2,11 @@ import re
 import core.scanner.banner_grabber
 
 signatures = {
-    "ProFTPD" : r"([\d+\.]+)",
-    "Apache" : r"([\d+\.]+)",
-    "OpenSSL" : r"OpenSSL/([\d+\.]+)",
+    "ProFTPD" : r"ProFTPD/([\d+\.]+)",
+    "Apache" : r"Apache/([\d+\.]+)",
+    "mod_perl" : r"mod_perl/([\d+\.]+)",
+    "Perl" : r"Perl/v?([\d+\.]+)",
+    "OpenSSL" : r"OpenSSL/([\d+\.]+\w?)",
     "PHP" :  r"PHP/([\d+\.]+)",
     "OpenSSH" : r"OpenSSH_([\d+\.]+)"
 }
@@ -14,12 +16,10 @@ class CVEMatcher:
         pass
 
     def _match(banner, signatures):
-        for value in signatures.values():
+        for key, value in signatures.items():
             match = re.search(value, banner)
         if match:
-            print(f"{signatures[value]}: {match.group(1)}")
-                
-                
-
+            print(f"{key}: {match.group(1)}")
+                    
     def run(banners):
-        pass
+        return
