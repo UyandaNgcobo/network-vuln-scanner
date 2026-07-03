@@ -11,7 +11,7 @@ def main():
     icmp_scanner = ICMPDiscovery()
     
     # Give it a test target network
-    target = "10.18.48.88/24"
+    target = "10.155.80.41/24"
     
     # Trigger the discovery phase
     active_hosts = icmp_scanner.discover(target)
@@ -25,8 +25,6 @@ def main():
 
         banner_grabber = BannerGrabber(max_workers=100)
         banners = banner_grabber.run(tcp_results)
-
-        print(f"\n\nBanners: {banners}")
     else:
         print("\n--- Hosts currently inactive ---\n")
 

@@ -48,7 +48,6 @@ class BannerGrabber:
             for ip, port in target_hosts:
                 buzzer = executor.submit(self._grab_banner, ip, port)
                 futures.append(buzzer)
-
             
             for buzzer in concurrent.futures.as_completed(futures):
                 grabbing_result = buzzer.result()
