@@ -53,9 +53,9 @@ class BannerGrabber:
                 grabbing_result = buzzer.result()
 
                 if grabbing_result is not None:
-                    result_ip, result_port, result_banner = grabbing_result
-                    banners.append((result_ip, result_port, grabbing_result))
+                    result_banner = grabbing_result
+                    banners.append((grabbing_result))
 
-                    print(f"ip: {result_ip}\nport: {result_port}\nBanner: {result_banner}\n\n")
+                    print(f"\nBanner: {result_banner}\n\n")
         
         return banners

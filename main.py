@@ -2,6 +2,7 @@
 from core.discovery.icmp import ICMPDiscovery
 from core.scanner.tcp_scanner import TCPScanner
 from core.scanner.banner_grabber import BannerGrabber
+from core.matcher.cve_matcher import CVEMatcher
 
 def main():
     print("--- Starting Network Vulnerability Scanner ---")
@@ -11,7 +12,7 @@ def main():
     icmp_scanner = ICMPDiscovery()
     
     # Give it a test target network
-    target = "10.155.80.41/24"
+    target = "10.52.141.252/24"
     
     # Trigger the discovery phase
     active_hosts = icmp_scanner.discover(target)
@@ -25,6 +26,11 @@ def main():
 
         banner_grabber = BannerGrabber(max_workers=100)
         banners = banner_grabber.run(tcp_results)
+
+        matcher = CVEMatcher()
+        matches = matcher.run(banners)
+
+        print(matches)
     else:
         print("\n--- Hosts currently inactive ---\n")
 
