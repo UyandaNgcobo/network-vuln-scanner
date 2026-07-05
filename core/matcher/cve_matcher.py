@@ -16,16 +16,15 @@ class CVEMatcher:
         pass
 
     def _match(self, banner, signatures):
+        matches = []
         for key, value in signatures.items():
             match = re.search(value, banner)
-        if match:
-            print(f"{key}: {match.group(1)}")
+            if match:
+                matches.append((key, (match.group(1))))
                     
     def run(self, banners):
-        cleaned_banners = []
-        for item in banners:
-            (ip, port, banner) = banners
-            clean_text = self._match(banner, signatures)
-            cleaned_banners.append(clean_text)
+        for ip, port, banner in banners:
+            clean_banners = self._match(banner, signatures)
+            print(f"\nIP: {ip}\nPort:{port}\nBanner: {clean_banners}")
             
-        return (ip, port, clean_text)
+        return (ip, port, clean_banners)
