@@ -61,7 +61,7 @@ class CVEMatcher:
             print(f"Error: {e}\n")
                 
     def run(self, banners):
-        timeout=3.0
+        timeout=5.0
         clean_banners = []
         #extracting app, vendor, ver in banners
         for ip, port, banner in banners:
