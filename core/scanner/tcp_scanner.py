@@ -31,7 +31,7 @@ class TCPScanner:
         return None
     
     def run(self, target_ips, target_ports):
-        print(f"[*] Starting TCP Port Scan...")
+        print(f"\n[*] Starting TCP Port Scan..\n.")
 
         #setting up slots for Futures
         futures = []
