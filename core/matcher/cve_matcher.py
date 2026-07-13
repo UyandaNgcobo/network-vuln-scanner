@@ -41,19 +41,29 @@ class CVEMatcher:
         else:
             print("[-] Banner not recognised.\n")
         
-    def _match(self, clean_banner):
+    def _match(self, app, vendor, ver):
+        """
+        - The ip, port and clean banner is passed in here as a tuple.
+        - i.e, (ip, port, [(banner), (banner)])
+        - The banner gets unpacked and has its data fitted into the API parameters
+        - i.e, app, vendor, ver = (banner)
+        - try-catch attempts to get data from database via API and checks response and then formats it into JSON.
+        """
         print("[*] Matching product against database...\n")
-        app, vendor, ver = clean_banner
-    
+        #unpacking ip, port and clean banner
         url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName=cpe:2.3:a:{vendor}:{app.lower()}:{ver}:*:*:*:*:*:*:*"
 
         try:
-            print("[+] Getting url....\n")
+            print("[*] Getting url....\n")
             response = requests.get(url)
             if response.status_code == 200:
                 print("Got it!\n")
                 data = response.json()
-                print(data["vulnerabilities"][0]["cve"][0]["vulnStatus"])
+                if len(data["vulnerabilities"][0]) > 0:
+                    vuln_data = data["vulnerabilities"][0]["cve"]
+                    cve_id = vuln_data["id"]
+                    vuln_status = vuln_data["vulnStatus"]
+                    return cve_id, vuln_status
             else:
                 print("[-] Did not get it!\n")
                 return None
@@ -70,19 +80,24 @@ class CVEMatcher:
             print("----------------------------------------------------------------------------------------------\n")
         
         print("\n[+] --- Cleaning is done! ---\n")
-        print(f"Clean banners: {clean_banners}\n")
         
-        for clean_banner in clean_banners:
-    
-            if clean_banner:
-                print("\n ------ I'm here! ------ \n")
-                print(f"Banner to work on right now: {clean_banner}")
-                app, vendor, ver = clean_banner
-                print(f"App:{app}\nVendor: {vendor}\nVersion:{ver}")
-                self._match(clean_banner)
-                time.sleep(timeout)
-            else:
-                continue
+        #seperating ip, port and banner
+        for ip, port, recognised_list in clean_banners:
+            print(f"IP: {ip}\nPort: {port}")
+
+            if recognised_list is not None:
+
+                #grabbing a banner at a time
+                for banner in recognised_list: 
+
+                    #seperating app, vendor and version inside banner
+                    app, vendor, ver = banner
+                    print(f"App:{app}\nVendor: {vendor}\nVersion:{ver}")
+                    self._match(app, vendor, ver)
+                    time.sleep(timeout)
+                else:
+                    continue
+            print("----------------------------------------------------------------------------------------------\n")
         
 
         
