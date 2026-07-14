@@ -73,6 +73,7 @@ class CVEMatcher:
     def run(self, banners):
         timeout=5.0
         clean_banners = []
+        reports = []
         #extracting app, vendor, ver in banners
         for ip, port, banner in banners:
             print(f"IP: {ip}\nPort: {port}")
@@ -85,6 +86,8 @@ class CVEMatcher:
         for ip, port, recognised_list in clean_banners:
             print(f"IP: {ip}\nPort: {port}")
 
+            matching_results = []
+
             if recognised_list is not None:
 
                 #grabbing a banner at a time
@@ -93,11 +96,13 @@ class CVEMatcher:
                     #seperating app, vendor and version inside banner
                     app, vendor, ver = banner
                     print(f"App:{app}\nVendor: {vendor}\nVersion:{ver}")
-                    self._match(app, vendor, ver)
+                    matching_results.append((self._match(app, vendor, ver)))
                     time.sleep(timeout)
                 else:
                     continue
             print("----------------------------------------------------------------------------------------------\n")
+            reports.append(matching_results)
         
+        return reports
 
         
